@@ -12,6 +12,7 @@ import bench
 
 # And pyspark.sql to get the spark session
 from pyspark.sql import SparkSession
+import statistics
 
 
 def pq_sum_orders(spark, file_path):
@@ -32,9 +33,20 @@ def pq_sum_orders(spark, file_path):
     df_sum_orders:
         Uncomputed dataframe of total orders grouped by zipcode
     '''
+    summed_order = spark.read.parquet(file_path, header=True, 
+                            schema='first_name STRING, last_name STRING, age INT, income FLOAT, zipcode INT, orders INT, loyalty BOOLEAN, rewards BOOLEAN')
 
-    #TODO
-    pass
+    summed_order.createOrReplaceTempView('summed_order')
+    
+    res1 = spark.sql('SELECT COUNT(orders) FROM summed_order GROUP BY zipcode;')
+    #res=res1.repartition("zipcode")
+    #res1.explain()
+    #summed_order.groupby(summed_order.zipcode).agg(count(summed_order.orders))
+
+    return res1
+
+
+
 
 
 
@@ -45,8 +57,13 @@ def main(spark, file_path):
     spark : SparkSession object
     which_dataset : string, size of dataset to be analyzed
     '''
-    #TODO
-    pass
+    times = bench.benchmark(spark, 25, pq_sum_orders, file_path)
+
+    print(f'Times to run Basic Query 5 times on {file_path}')
+    print(times)
+    print(f'Maximum Time taken to Sum Orders Query 25 times on {file_path}:{max(times)}')
+    print(f'Minimum Time taken to Sum Orders Query 25 times on {file_path}:{min(times)}')
+    print(f'Median Time taken to run Sum Orders Query 25 times on {file_path}:{statistics.median(times)}')
 
 # Only enter this block if we're in main
 if __name__ == "__main__":

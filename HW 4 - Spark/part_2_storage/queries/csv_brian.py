@@ -40,7 +40,8 @@ def csv_brian(spark, file_path):
 
     brian_query.createOrReplaceTempView('brian_query')
     #DataFrame which computes users having at least 100 orders, and are not currently signed up for the rewards credit card program.
-    res3=spark.sql("SELECT first_name, last_name FROM brian_query WHERE first_name = 'Brian' and loyalty = FALSE")
+    res3=spark.sql("SELECT  last_name,first_name, zipcode FROM brian_query WHERE first_name='Brian' AND loyalty=FALSE GROUP BY last_name, first_name, zipcode ")
+    res3.explain()
     return res3
 
 
@@ -54,7 +55,7 @@ def main(spark, file_path):
     '''
     times = bench.benchmark(spark, 25, csv_brian, file_path)
 
-    print(f'Times to run Basic Query 5 times on {file_path}')
+    print(f'Times to run Basic Query 25 times on {file_path}')
     print(times)
     print(f'Maximum Time taken to Brian Query 25 times on {file_path}:{max(times)}')
     print(f'Minimum Time taken to Brian Query 25 times on {file_path}:{min(times)}')

@@ -41,7 +41,7 @@ def basic_query(spark, file_path):
     people.createOrReplaceTempView('people')
 
     top5 = spark.sql('SELECT * FROM people ORDER BY last_name, first_name ASC LIMIT 5')
-    top5.show()
+    #top5.show()
 
     return top5
 

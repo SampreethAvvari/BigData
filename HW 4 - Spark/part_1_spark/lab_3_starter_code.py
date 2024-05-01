@@ -71,7 +71,7 @@ def main(spark, userID):
     question_2_query= reserves.filter(reserves.bid !=101).groupby(reserves.sid).agg(count(reserves.bid))
     question_2_query.show()
     print('Q3: SELECT s.sid, s.sname, COUNT(DISTINCT b.bname) FROM sailors s JOIN reserves r ON s.sid = r.sid JOIN boats b ON r.bid = b.bid GROUP BY s.sid, s.sname')
-    question_3_query=spark.sql('SELECT s.sid, s.sname, COUNT(DISTINCT b.bname) FROM sailors s JOIN reserves r ON s.sid = r.sid JOIN boats b ON r.bid = b.bid GROUP BY s.sid, s.sname')
+    question_3_query=spark.sql('SELECT s.sid, s.sname, COUNT(DISTINCT b.bid) FROM sailors s JOIN reserves r ON s.sid = r.sid JOIN boats b ON r.bid = b.bid GROUP BY s.sid, s.sname')
     question_3_query.show()
     #bigger datasets
     artist_term = spark.read.csv(f'hdfs:/user/{userID}/artist_term.csv')
